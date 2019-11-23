@@ -2,7 +2,8 @@
 Converts selected data from a VCD file into CSV form.   
 Each line of the resultant CSV corresponds to a single cycle of execution.  
 Cycle times are determined automatically using the CLOCK specifier.  
-Uses Verilog\_VCD for VCD parsing, by Gene Sullivan, Sameer Gauria, et. al.: https://pypi.org/project/Verilog\_VCD/  
+Uses Verilog\_VCD for VCD parsing, by Gene Sullivan, Sameer Gauria, et. al.: https://pypi.org/project/Verilog_VCD/  
+On Ubuntu 18, Verilog\_VCD doesn't seem to work when installed as a library, so it has been explicitly included.  
 
 ## Usage
 Running the script requires a VCD file and a list of signals.  
