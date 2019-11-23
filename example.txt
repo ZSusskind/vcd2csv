@@ -1,0 +1,3 @@
+GCD.x
+GCD.y [15:0] [15:6] 5 [4:3] 2 [1:0]
+GCD.clock CLOCK
