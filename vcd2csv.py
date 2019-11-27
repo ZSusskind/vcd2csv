@@ -4,6 +4,16 @@ import sys
 import csv
 from Verilog_VCD import *
 
+def computeHamming(a, b):
+	distance = 0
+	while(a != 0 or b != 0):
+		if (a % 2) != (b % 2):
+			distance += 1
+		a >>= 1
+		b >>= 1
+	return distance
+
+
 if len(sys.argv) != 4:
 	print("Usage ./" + sys.argv[0] + " <vcd file> <txt file with target signal names> <output csv name>")
 	exit()
@@ -101,13 +111,16 @@ for sig in sigs[1:]: # Expand out shorter signal traces with their final value
 out_file = open(out_fname, "wb")
 out_writer = csv.writer(out_file, delimiter=",")
 
-header = ["Cycle", "Distance"]
+header = ["Cycle", "Global_Distance"]
 for sig in sigs[1:]:
 	if sig not in sig_ranges:
 		header.append(sig)
+		header.append("d_" + sig)
 	else:
 		for sig_range in sig_ranges[sig]:
-			header.append(sig + "[" + str(sig_range[0]) + ":" + str(sig_range[1]) + "]")
+			sig_name = sig + "[" + str(sig_range[0]) + ":" + str(sig_range[1]) + "]"
+			header.append(sig_name)
+			header.append("d_" + sig_name)
 out_writer.writerow(header)
 for i in range(max_clock + 1):
 	line = [i]
@@ -118,20 +131,25 @@ for i in range(max_clock + 1):
 		for sig in sigs[1:]:
 			last_val = sigs_trace[sig][i-1]
 			curr_val = sigs_trace[sig][i]
-			while(last_val != 0 or curr_val != 0):
-				if (last_val % 2) != (curr_val % 2):
-					distance += 1
-				last_val >>= 1
-				curr_val >>= 1
+			distance += computeHamming(last_val, curr_val)
 		line.append(distance)
-
 	for sig in sigs[1:]:
 		if sig not in sig_ranges:
 			line.append(sigs_trace[sig][i])
+			if i == 0:
+				line.append(0)
+			else:
+				line.append(computeHamming(sigs_trace[sig][i-1], sigs_trace[sig][i]))
 		else:
 			for sig_range in sig_ranges[sig]:
 				bits_in_range = 1 + sig_range[0] - sig_range[1]
 				masked_bits = sigs_trace[sig][i] >> sig_range[1]
 				masked_bits &= (1 << bits_in_range) - 1
 				line.append(masked_bits)
+				if i == 0:
+					line.append(0)
+				else:
+					last_masked_bits = sigs_trace[sig][i-1] >> sig_range[1]
+					last_masked_bits &= (1 << bits_in_range) - 1
+					line.append(computeHamming(last_masked_bits, masked_bits))
 	out_writer.writerow(line)
