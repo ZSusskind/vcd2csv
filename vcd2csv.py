@@ -34,6 +34,7 @@ with open(sig_fname, "r") as sig_f:
 			if not found_clock:
 				found_clock = True
 				clock_name = sig
+				print("Found clock signal " + sig)
 			else:
 				print("ERROR: Found multiple clocks in signal list")
 				exit()
@@ -59,9 +60,10 @@ if not found_clock:
 sigs.remove(clock_name)
 sigs.insert(0, clock_name)
 
-print(sigs)
+print("List of signals to extract: " + str(sigs))
 
 vcd = parse_vcd(vcd_fname, siglist=sigs)
+print("Read in VCD")
 
 # Construct a mapping from full signal names to the abbreviated variable name used in the VCD
 fullname_mappings = {}

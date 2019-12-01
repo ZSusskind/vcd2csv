@@ -137,7 +137,13 @@ def parse_vcd(file, only_sigs=0, use_stdout=0, siglist=[], opt_timescale=''):
                 type = ls[1]
                 size = ls[2]
                 code = ls[3]
-                name = "".join(ls[4:-1])
+### MODIFIED - Zachary Susskind 11/29/2019
+                #name = "".join(ls[4:-1]) # ORIG
+                if int(size) > 1:
+                    name = "".join(ls[4:-2])
+                else:
+                    name = "".join(ls[4:-1])
+###
                 path = '.'.join(hier)
                 full_name = path + '.' + name
                 if (full_name in usigs) or all_sigs:
