@@ -15,7 +15,7 @@ def computeHamming(a, b):
 
 
 if len(sys.argv) != 4:
-	print("Usage ./" + sys.argv[0] + " <vcd file> <txt file with target signal names> <output csv name>")
+	print("Usage: " + sys.argv[0] + " <vcd file> <txt file with target signal names> <output csv name>")
 	exit()
 
 vcd_fname = sys.argv[1]
