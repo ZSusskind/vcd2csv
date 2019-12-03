@@ -104,7 +104,10 @@ for sig in sigs[1:]:
 			if current_clock > max_clock:
 				max_clock = current_clock
 			current_time += clock_period
+	if len(sigs_trace[sig]) == 0:
+		sigs_trace[sig].append(int(sig_data[-1][1], 2))
 for sig in sigs[1:]: # Expand out shorter signal traces with their final value
+
 	while len(sigs_trace[sig]) < max_clock + 1:
 		sigs_trace[sig].append(sigs_trace[sig][-1])
 
