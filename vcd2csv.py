@@ -81,12 +81,13 @@ for entry_idx, entry in enumerate(clock_data):
 		first_posedge_idx = entry_idx
 		first_posedge_time = entry[0]
 		break
-if not first_posedge_time:
+if first_posedge_time is None:
 	print("ERROR: Could not find rising clock edge")
 	exit()
 clock_period = clock_data[first_posedge_idx+2][0] - first_posedge_time
 print("clock period " + str(clock_period))
 
+xz_count = 0
 sigs_trace = {}
 max_clock = 0
 for sig in sigs[1:]:
@@ -98,7 +99,12 @@ for sig in sigs[1:]:
 	while entry_idx < len(sig_data)-1:
 		while entry_idx < len(sig_data)-1 and sig_data[entry_idx+1][0] <= current_time:
 			entry_idx += 1
-		sigs_trace[sig].append(int(sig_data[entry_idx][1], 2))
+		sig_entry = bytearray(sig_data[entry_idx][1])
+		for char_idx in range(len(sig_entry)):
+			if sig_entry[char_idx] == ord('x') or sig_entry[char_idx] == ord('z'):
+				sig_entry[char_idx] = ord('0')
+				xz_count += 1
+		sigs_trace[sig].append(int(str(sig_entry), 2))
 		if entry_idx < len(sig_data)-1:
 			current_clock += 1
 			if current_clock > max_clock:
@@ -110,6 +116,9 @@ for sig in sigs[1:]: # Expand out shorter signal traces with their final value
 
 	while len(sigs_trace[sig]) < max_clock + 1:
 		sigs_trace[sig].append(sigs_trace[sig][-1])
+
+if xz_count > 0:
+	print("WARNING: " + str(xz_count) + " undefined or high-impedance signal values were encountered in signal data")
 
 # Write results to file
 
